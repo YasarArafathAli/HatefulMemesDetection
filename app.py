@@ -13,7 +13,7 @@ import random
 from bs4 import BeautifulSoup
 import re
 from functools import partial
-data_dir = "/streamlit-hatefulmemedection/"
+data_dir = "D:\Arafath\Major\streamlit-hatefulmemedection"
 SLANG_PATH = "static/slang.txt"
 import webbrowser # inbuilt module
 
@@ -26,107 +26,7 @@ BATCH_SIZE = 50
 BUFFER_SIZE = 200
 attention_features_shape = 64
 
-#=================================== Title ===============================
-st.title("""
-HateFul Meme Detector
-	""")
 
-#================================= Title Image ===========================
-st.text("""""")
-img_path_list = ["static/image_1.jpg",
-				"static/image_2.jpg"]
-index = random.choice([0,1])
-image = Image.open(img_path_list[index])
-st.image(
-	        image,
-	        use_column_width=True,
-	    )
-
-#================================= About =================================
-st.write("""
-## 1️⃣ About
-	""")
-st.write("""
-Hi all, Welcome to this project. It is a Hateful Meme Detector App!!!
-	""")
-st.write("""
-You have to upload your own test images to test it!!!
-	""")
-st.write("""
-**Or**, if you don't have any memes with you, then also no problem **(**😎**)**, I already selected some test images with text files for you, you have to just go to that section & click the **⬇️ Download** button to download those pictures!  
-	""")
-
-#============================ How To Use It ===============================
-st.write("""
-## 2️⃣ How To Use It
-	""")
-st.write("""
-Well, it's pretty simple!!!
-- Let me clear first, the model has power to any memes with text on it only, so you are requested to give image and text written on the image,if image or text is missing you will prompted again to upload or write it 😆 
-- First of all, download Meme image and text on it!
-- Next, just Browse that files or Drag & drop that file!
-- Please make sure that, you are uploading a picture file and txt file!
-- Press the **👉🏼 Predict** button to see the magic!!!
-
-🔘 **NOTE :** *If you upload other than an image file/txt file, then it will show an error massage when you will click the* **👉🏼 Predict** *button!!!*
-	""")
-
-#========================= What It Will Predict ===========================
-st.write("""
-## 3️⃣ What It Will Predict
-	""")
-st.write("""
-Well, it can predict wheather the image you have uploaded is the HateFul 😠 or Not-Hateful 🤪?
-	""")
-
-#============================== Sample Images For Testing ==================
-st.write("""
-## 4️⃣  Download Some Images For Testing!!!
-	""")
-st.write("""
-Hey there! here is some meme images and it's texts on google drive!
-- Here you can find a total of 10 images **[**5 for each category**]**
-- Just click on **⬇️ Download** button & download those images and text files!!!
-- The meme and its corresponding text file have same name. Download both for prediction
-- You can also try your own images!!!
-	""")
-
-#============================= Download Button =============================
-st.text("""""")
-download = st.button("⬇️ Download")
-
-#============================ Download Clicked =============================
-if download:
-	link = "https://drive.google.com/drive/folders/12HJwwTpri-JD4PRqWp6TwqR-1TXe1tVG?usp=sharing"
-	try:
-		webbrowser.open(link)
-	except:
-		st.write("""
-    		⭕ Something Went Wrong!!! Please Try Again Later!!!
-    		""")
-
-#============================ Behind The Scene ==========================
-st.write("""
-## 5️⃣ Behind The Scene
-	""")
-st.write("""
-To see how it works, please click the button below!
-	""")
-st.text("""""")
-github = st.button("👉🏼 Click Here To See How It Works")
-if github:
-	github_link = "https://github.com/praveen-jalaja/streamlit-hatefulmemedection"
-	try:
-		webbrowser.open(github_link)
-	except:
-		st.write("""
-    		⭕ Something Went Wrong!!! Please Try Again Later!!!
-    		""")
-
-#======================== Time To See The Magic ===========================
-st.write("""
-## 👁️‍🗨️ Time To See the Model Prediction 🌀
-	""")
 #==================================== Model ==================================
 ##================================Preloading function=======================================
 @st.cache()
@@ -289,7 +189,7 @@ class_values = ["non-hateful","hateful"]
 @st.cache(allow_output_mutation=True)
 def evaluate(image,text):
     image_features_extract_model, text_features_extract_model, encoder, decoder = load_model()
-    text = text_preprocessing([text])[0]
+    # text = text_preprocessing([text])[0]
     attention_plot = np.zeros((1, attention_features_shape))
     hidden = decoder.reset_state(batch_size=1)
     img_tensor = tf.expand_dims(load_image(image), 0)
@@ -305,6 +205,13 @@ def evaluate(image,text):
     
     predicted_id = np.argmax(predictions, axis = 1).tolist()
     return predictions,class_values[predicted_id[0]]
+#=================================== Title ===============================
+st.title("""
+Offensive Meme Detectioin Using Deep Learning
+	""")
+
+
+
 
 #========================== File Selector ===================================
 # st.write("""
@@ -312,17 +219,17 @@ def evaluate(image,text):
 # """)
 
 # option = st.selectbox('Select a Meme',
-#                       [x for x in os.listdir(os.path.join(data_dir+"images")) if '.png' in x ])
+#                       [x for x in os.listdir(os.path.join("./images")) if '.png' in x ])
 
-# img_file_buffer = data_dir+"images/"+option
-# txt_file_buffer = data_dir+"images/"+option.split('.')[0]+'.txt'
+# img_file_buffer = "./images/"+option
+# txt_file_buffer = "./images/"+option.split('.')[0]+'.txt'
 
 # st.write("""**Or**""")
 
 #========================== File Uploader ===================================
 
 img_file_buffer = st.file_uploader("Upload an image(.png preffered) here 👇🏻")
-txt_file_buffer = st.file_uploader("Upload an text file(.txt) here 👇🏻")
+txt_file_buffer = "pass"
 
 text = ""
 if txt_file_buffer:
@@ -333,43 +240,28 @@ try:
 	image = Image.open(img_file_buffer)
 
 	st.write("""
-		Preview 👀 Of Given Image!
+		Preview Of Selected Image!
 		""")
 
-	if image is not None:
-	    st.image(
-	        image,
-	        use_column_width=True
-	    )
+	if image is not None:st.image(image,use_column_width=False, width=400)
 
-  st.write("""Now, you are just one step ahead of prediction.""")
-
-	st.write("""
-		**Just Click The '👉🏼 Predict' Button To See The Prediction Corresponding To This meme! 😄**
-		""")
 except:
 	st.write("""
 		### ❗ Any Picture hasn't selected yet!!!
 		""")
 
+
 #================================= Predict Button ============================
 st.text("""""")
-submit = st.button("👉🏼 Predict")
+submit = st.button("Predict")
 
 
 ##=================prediction================================================#
 def generate_result(prediction):
-	st.write("""
-	## 🎯 RESULT
-		""")
-	if prediction == "hateful":
-	    st.write("""
-	    	## Model predicts it as an Hateful Meme  😈!!!
-	    	""")
-	else:
-	    st.write("""
-	    	## Model predicts it as an Non-Hateful Meme 🤗!!!
-	    	""")
+  st.write("""## 🎯 RESULT""")
+  if prediction == "hateful":st.write("""## Model predicts it as an Hateful Meme!!!""")
+  else:
+    st.write("""## Model predicts it as an Non-Hateful Meme!!!""")
 
 #=========================== Predict Button Clicked ==========================
 if submit:
@@ -385,17 +277,48 @@ if submit:
 
 
 
-#=============================== Copy Right ==============================
-st.text("""""")
-st.text("""""")
-st.text("""""")
-st.text("""""")
-st.text("""""")
-st.text("""""")
-st.text("""""")
-st.text("""""")
-st.text("""""")
-st.text("""""")
+#================================= Title Image ===========================
+# st.text("""""")
+# img_path_list = ["static/image_1.jpg",
+# 				"static/image_2.jpg"]
+# index = random.choice([0,1])
+# image = Image.open(img_path_list[index])
+# st.image(
+# 	        image,
+# 	        use_column_width=True,
+# 	    )
+
+#================================= About =================================
+
+
+
+
+#========================= What It Will Predict ===========================
 st.write("""
-### ©️ Created By Praveen Jalaja
+## ABOUT
 	""")
+st.write("""
+This project is a multimodal program which can predict wheather the image you have uploaded is the HateFul or Not-Hateful Using Deep Neural Networks with VisualBert Model
+	""")
+
+
+
+#============================ Behind The Scene ==========================
+st.write("""
+## Behind The Scene
+	""")
+st.write("""
+To see how it works, please click the button below!
+	""")
+st.text("""""")
+github = st.button("👉🏼 Click Here To See How It Works")
+if github:
+	github_link = "https://github.com/yasararafathali/hatefulmemesdetection"
+	try:
+		webbrowser.open(github_link)
+	except:
+		st.write("""
+    		⭕ Something Went Wrong!!! Please Try Again Later!!!
+    		""")
+
+#======================== Time To See The Magic ===========================
