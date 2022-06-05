@@ -17,6 +17,7 @@ data_dir = "D:\Arafath\Major\streamlit-hatefulmemedection"
 SLANG_PATH = "static/slang.txt"
 import webbrowser # inbuilt module
 
+
 image_shape = (256,256,3)
 trainable = False
 max_seq_length = 128
@@ -47,6 +48,8 @@ def decontracted(phrase):
     return phrase
 
 
+
+# opening slang map
 with open(SLANG_PATH) as file:
     slang_map = dict(map(str.strip, line.partition('\t')[::2])
     for line in file if line.strip())
@@ -189,7 +192,6 @@ class_values = ["non-hateful","hateful"]
 @st.cache(allow_output_mutation=True)
 def evaluate(image,text):
     image_features_extract_model, text_features_extract_model, encoder, decoder = load_model()
-    # text = text_preprocessing([text])[0]
     attention_plot = np.zeros((1, attention_features_shape))
     hidden = decoder.reset_state(batch_size=1)
     img_tensor = tf.expand_dims(load_image(image), 0)
@@ -205,43 +207,58 @@ def evaluate(image,text):
     
     predicted_id = np.argmax(predictions, axis = 1).tolist()
     return predictions,class_values[predicted_id[0]]
+
+
 #=================================== Title ===============================
 st.title("""
-Offensive Meme Detectioin Using Deep Learning
+Offensive Meme Detectioin
 	""")
 
 
 
 
 #========================== File Selector ===================================
-# st.write("""
-# #### Select from the Drop Down test memes
-# """)
+st.write("""
+#### Select from the Drop Down test memes
+""")
 
-# option = st.selectbox('Select a Meme',
-#                       [x for x in os.listdir(os.path.join("./images")) if '.png' in x ])
+DEFAULT = '< PICK A VALUE >'
+option = st.selectbox('Select a Meme',
+                      [x for x in os.listdir(os.path.join("./images")) if '.png' in x ])
 
-# img_file_buffer = "./images/"+option
-# txt_file_buffer = "./images/"+option.split('.')[0]+'.txt'
 
-# st.write("""**Or**""")
+img_file_buffer_option = "./images/"+option
+txt_file_buffer_option = "./images/"+option.split('.')[0]+'.txt'
+
+st.write("""**Or Upload Image with Text**""")
+
+img_file_buffer = st.file_uploader("Upload an image(.png preffered) here 👇🏻")
+txt_file_buffer = st.file_uploader("Upload a text file(.txt preffered) here 👇🏻")
+
+
 
 #========================== File Uploader ===================================
 
-img_file_buffer = st.file_uploader("Upload an image(.png preffered) here 👇🏻")
-txt_file_buffer = "pass"
+
 
 text = ""
+if option and img_file_buffer is None:
+  img_file_buffer = img_file_buffer_option
+  txt_file_buffer = txt_file_buffer_option
 if txt_file_buffer:
   for line in txt_file_buffer:
     text = line
 
+if len(text) > 2 :
+
+  st.write("""Selected Text inside the image""")
+  st.subheader(text)
+
+
 try:
 	image = Image.open(img_file_buffer)
 
-	st.write("""
-		Preview Of Selected Image!
-		""")
+	st.write("""Preview Of Selected Image!""")
 
 	if image is not None:st.image(image,use_column_width=False, width=400)
 
@@ -259,9 +276,10 @@ submit = st.button("Predict")
 ##=================prediction================================================#
 def generate_result(prediction):
   st.write("""## 🎯 RESULT""")
-  if prediction == "hateful":st.write("""## Model predicts it as an Hateful Meme!!!""")
+  st.write(prediction)
+  if prediction == "hateful":st.write("""## Model predicts it as a Hateful Meme!!!""")
   else:
-    st.write("""## Model predicts it as an Non-Hateful Meme!!!""")
+    st.write("""## Model predicts it as a Non-Hateful Meme!!!""")
 
 #=========================== Predict Button Clicked ==========================
 if submit:
@@ -272,7 +290,7 @@ if submit:
   # Predicting
   st.write("👁️ Predicting...")
   pred, predicted_class = evaluate(image_path,text)
-
+  st.write(pred)
   generate_result(predicted_class)
 
 
@@ -287,19 +305,6 @@ if submit:
 # 	        image,
 # 	        use_column_width=True,
 # 	    )
-
-#================================= About =================================
-
-
-
-
-#========================= What It Will Predict ===========================
-st.write("""
-## ABOUT
-	""")
-st.write("""
-This project is a multimodal program which can predict wheather the image you have uploaded is the HateFul or Not-Hateful Using Deep Neural Networks with VisualBert Model
-	""")
 
 
 
@@ -322,3 +327,4 @@ if github:
     		""")
 
 #======================== Time To See The Magic ===========================
+  
